@@ -5,6 +5,10 @@ using UnityEngine;
 public class basicPathfinding : MonoBehaviour
 {
 
+    //Ben
+    float baseSpeed = 2, acceleration = 0.5f;
+    string target = "Home";
+
     //Basic AI
     public GameObject player;
     float distFromTarget, range = 10;
@@ -29,26 +33,25 @@ public class basicPathfinding : MonoBehaviour
         player = GameObject.FindWithTag("Player");
         SpawnPos = new Vector2(transform.position.x, transform.position.y);
         playerPos = player.transform;
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        print(timer);
-        Acceleration = speedUp * timer;
-        speed = moveSpeed + Acceleration;
+        print("Inital speed:" + speed);
+        speed = (speed * Time.deltaTime) + (acceleration * Time.deltaTime);
         if (speed >= maxSpeed)
         {
             speed = maxSpeed;
         }
-        
+        print("New speed:" + speed);
 
         //Setting up player and checking distance between player and AI
         if (player != null)
         {
-            distFromTarget = Vector2.Distance(new Vector2(transform.position.x, transform.position.y), new Vector2(player.transform.position.x, player.transform.position.y));
+            distFromTarget = GetDistanceFromPlayer(player);
         }
 
         //if the player is within range, begin tracking
@@ -66,17 +69,27 @@ public class basicPathfinding : MonoBehaviour
 
         if (lost == true)
         {
-            Invoke("Home", 0.5f);
+            Invoke("Home", 0.5f); //What does this do?
         }
-        
+
 
     }
 
+    /*
+     * This is a healper method that returns the distance from this object and the player.
+     */
+    float GetDistanceFromPlayer(GameObject player)
+    {
+        return Vector2.Distance(new Vector2(transform.position.x, transform.position.y), new Vector2(player.transform.position.x, player.transform.position.y));
+    }
+
+    /*
+     * Executes whenever a object comes within a radius of 10 of this object.
+     */
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Player")
         {
-            timer = timer + (1 * Time.deltaTime);
             sightBreak = false;
         }
     }
@@ -100,13 +113,13 @@ public class basicPathfinding : MonoBehaviour
         {
             VanishPos = new Vector2(player.transform.position.x, player.transform.position.y);
             sightBreak = true;
-            
+
         }
     }
 
     void TrackPlayer()
     {
-        Vector2 tracking = new Vector2((transform.position.x - playerPos.position.x) * speed,   (transform.position.y - playerPos.position.y) * speed);
+        Vector2 tracking = new Vector2((transform.position.x - playerPos.position.x) * speed, (transform.position.y - playerPos.position.y) * speed);
         GetComponent<Rigidbody2D>().velocity = -tracking;
 
     }
@@ -116,12 +129,12 @@ public class basicPathfinding : MonoBehaviour
         Vector2 searching = new Vector2((transform.position.x - VanishPos.x) * speed, (transform.position.y - VanishPos.y) * speed);
         GetComponent<Rigidbody2D>().velocity = -searching;
 
-        if(transform.position.x <= VanishPos.x + 1 && transform.position.x >= VanishPos.x - 1 && transform.position.y <= VanishPos.y + 1 && transform.position.y >= VanishPos.y - 1)
+        if (transform.position.x <= VanishPos.x + 1 && transform.position.x >= VanishPos.x - 1 && transform.position.y <= VanishPos.y + 1 && transform.position.y >= VanishPos.y - 1)
         {
             sightBreak = false;
             lost = true;
         }
-        
+
     }
 
     void Home()
