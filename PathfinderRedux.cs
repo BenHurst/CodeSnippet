@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ public class PathfinderRedux : MonoBehaviour {
     float waitTime, startWaitTime = 1;
     int randomSpot;
     float playerDist, trackRange = 10, attackRange = 1;
-    public float speed;
+    float speed = 10;
 
 
     Vector2 moveToSite, vanishPos;
@@ -70,6 +70,7 @@ public class PathfinderRedux : MonoBehaviour {
                 {
                     sightBreak = false;
                     lost = true;
+                    waitTime = startWaitTime;
                 }
             }
         }
