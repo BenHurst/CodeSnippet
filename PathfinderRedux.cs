@@ -1,47 +1,54 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PathfinderRedux : MonoBehaviour {
 
-    float waitTime, startWaitTime = 1;
-    int randomSpot;
-    float playerDist, trackRange = 10, attackRange = 1;
-    float speed = 10;
+    protected Animator thisAnim;
 
 
-    Vector2 moveToSite, vanishPos;
-    public GameObject player;
+    protected float waitTime, startWaitTime = 1;
+    protected int randomSpot;
+    protected float playerDist, trackRange = 10, attackRange = 1;
+    protected float speed = 10;
 
-    bool sightBreak, lost = true;
 
+    protected Vector2 moveToSite, vanishPos;
+    protected GameObject player;
+
+    protected bool sightBreak, lost = true;
+    
 
     //patrol between specific locations added by dev
     public Transform[] moveSpots;
 
     //patrol zone based on min/max x,y locations
-        //public Transform moveZone;
+    //public Transform moveZone;
 
 
 
 
-    void Start () {
+    protected virtual void Start () {
         waitTime = startWaitTime;
         randomSpot = Random.Range(0, moveSpots.Length);
         player = GameObject.FindWithTag("Player");
+
+        thisAnim = gameObject.GetComponent<Animator>();
+
         //patrol zone based on min/max x,y locations
         //moveZone.Position = new Vector2(Random.range(minX, maxX), Random.Range(minY, maxY));
     }
 
 
-    void Update () {
-
+    protected virtual void Update () {
+        
         if (player == null)
         {
             player = GameObject.FindWithTag("Player");
         }
         
         transform.position = Vector2.MoveTowards(transform.position, moveToSite, speed * Time.deltaTime);
+
         playerDist = Vector2.Distance(transform.position, player.transform.position);
 
         //if enemy is within .5 units of distance from the randomly selected location, wait 1 second, then move to the next randomly selected location
@@ -80,12 +87,17 @@ public class PathfinderRedux : MonoBehaviour {
         {
             moveToSite = moveSpots[randomSpot].position;
         }
-        
+        else if (playerDist <= attackRange)
+        {
+
+        }
+        Debug.Log(moveToSite + "ParentClass");
+
 	}
 
 
     //if the player exits the range of the enemy, set the VanishPos to 
-    void OnTriggerExit2D(Collider2D col)
+    protected virtual void OnTriggerExit2D(Collider2D col)
     {
         print(col.tag);
         if (col.tag == "Player")
@@ -96,7 +108,7 @@ public class PathfinderRedux : MonoBehaviour {
     }
 
 
-    void waitTimer()
+    protected virtual void waitTimer()
     {
         if (waitTime <= 0)
         {
